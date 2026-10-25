@@ -1,0 +1,25 @@
+{
+  "id": "skill_testing_pytest",
+  "name": "Automated Testing with Pytest",
+  "category": "qa",
+  "level": 3,
+  "description": "Menulis dan mengeksekusi automated test case untuk memverifikasi fungsionalitas kode.",
+  "prerequisites": [
+    "skill_python_basics"
+  ],
+  "procedures": [
+    "Membuat file test_*.py",
+    "Menulis assertion eksplisit",
+    "Menjalankan pytest melalui terminal runner"
+  ],
+  "tests": [
+    "Semua test case assertion lolos dengan exit code 0",
+    "Uji boundary cases dan failure handling"
+  ],
+  "sources": [
+    "https://docs.pytest.org/"
+  ],
+  "validated": true,
+  "confidence": 0.92,
+  "version": 1
+}

@@ -1,0 +1,19 @@
+{
+  "id": "skill_docker_basics",
+  "name": "Docker Containerization",
+  "category": "devops",
+  "level": 2,
+  "description": "Build and run docker containers",
+  "prerequisites": [],
+  "procedures": [
+    "Write Dockerfile",
+    "Build image"
+  ],
+  "tests": [
+    "Container runs properly"
+  ],
+  "sources": [],
+  "validated": true,
+  "confidence": 0.9,
+  "version": 1
+}

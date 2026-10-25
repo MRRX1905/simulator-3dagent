@@ -1,0 +1,23 @@
+{
+  "id": "skill_python_basics",
+  "name": "Python Core Development",
+  "category": "programming",
+  "level": 3,
+  "description": "Kemampuan menulis, membaca, dan debugging script Python fungsional.",
+  "prerequisites": [],
+  "procedures": [
+    "Menulis fungsi dengan type hints",
+    "Menangani exception dengan try-except",
+    "Menjalankan script dengan python interpreter"
+  ],
+  "tests": [
+    "Eksekusi fungsi tanpa runtime error",
+    "Menangani input invalid dengan exception spesifik"
+  ],
+  "sources": [
+    "https://docs.python.org/3/"
+  ],
+  "validated": true,
+  "confidence": 0.95,
+  "version": 1
+}

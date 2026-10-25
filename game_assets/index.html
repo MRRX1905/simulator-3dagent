@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI CITY — Autonomous Society</title>
+    <link rel="stylesheet" href="hud.css">
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+</head>
+<body>
+
+<!-- ── 3D WORLD ───────────────────────────────────────────── -->
+<div id="canvas-container"></div>
+<div id="bubbles-container"></div>
+
+<!-- ── TOP STATUS BAR ────────────────────────────────────── -->
+<div id="top-bar">
+    <div class="stat-item">
+        <span class="stat-icon">🕐</span>
+        <span id="stat-time" class="stat-value">08:00</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+        <span class="stat-icon">👥</span>
+        <span id="stat-pop" class="stat-value">5 Agents</span>
+    </div>
+    <div class="stat-divider"></div>
+
+    <!-- LLM Status -->
+    <div id="stat-llm" class="llm-pill" onclick="openLlmModal()" title="Konfigurasi AI Engine">
+        <span id="llm-icon">🧠</span>
+        <span id="llm-label">AI: Loading…</span>
+    </div>
+
+    <div class="stat-divider"></div>
+
+    <!-- Speed Controls -->
+    <div class="stat-item" style="gap:4px;">
+        <button class="speed-btn active" onclick="setSimulationSpeed(1,this)">1×</button>
+        <button class="speed-btn" onclick="setSimulationSpeed(3,this)">3×</button>
+        <button class="speed-btn" onclick="setSimulationSpeed(8,this)">8×</button>
+    </div>
+
+    <div class="stat-divider"></div>
+    <button class="icon-btn" onclick="openLlmModal()">⚙️ AI Engine</button>
+</div>
+
+<!-- ── CAMERA BAR ─────────────────────────────────────────── -->
+<div id="camera-bar">
+    <button class="cam-btn" onclick="setCameraPreset('city')">🏙️ Kota</button>
+    <button class="cam-btn" onclick="setCameraPreset('plaza')">⛲ Plaza</button>
+    <button class="cam-btn" onclick="setCameraPreset('tech')">🏢 Tech Hub</button>
+    <button class="cam-btn" onclick="setCameraPreset('residential')">🏡 Perumahan</button>
+</div>
+
+<!-- ── LIVE EVENT TICKER ──────────────────────────────────── -->
+<div id="event-ticker">
+    <div class="ticker-header">
+        <div class="ticker-dot"></div>
+        <span>Live Events</span>
+    </div>
+    <div id="ticker-list">
+        <div class="ticker-item">Citra: Memimpin rapat koordinasi kota…</div>
+        <div class="ticker-item">Ari: Membuka workspace untuk task baru…</div>
+        <div class="ticker-item">Bima: Siaga di lab QA & Testing…</div>
+        <div class="ticker-item">Deni: Riset di perpustakaan akademi…</div>
+        <div class="ticker-item">Eka: Mempersiapkan sesi pelatihan skill…</div>
+    </div>
+</div>
+
+<!-- ── AGENT INSPECTOR ────────────────────────────────────── -->
+<div id="agent-panel">
+    <div class="panel-header">
+        <div id="inspector-avatar" class="agent-avatar">👨‍💻</div>
+        <div>
+            <div id="inspector-name" class="agent-name">Ari</div>
+            <div id="inspector-role" class="agent-role-tag">Developer</div>
+            <div class="agent-status-badge">● IDLE</div>
+        </div>
+    </div>
+
+    <div class="bar-row">
+        <div class="bar-label"><span>Energi</span><span id="bar-energy-val">85%</span></div>
+        <div class="bar-track">
+            <div class="bar-fill energy" id="bar-energy" style="width:85%"></div>
+        </div>
+    </div>
+
+    <div class="bar-row">
+        <div class="bar-label"><span>Nutrisi</span><span id="bar-food-val">90%</span></div>
+        <div class="bar-track">
+            <div class="bar-fill food" id="bar-food" style="width:90%"></div>
+        </div>
+    </div>
+
+    <div id="inspector-thought" class="thought-box">
+        "Ari: Menunggu instruksi dari Citra…"
+    </div>
+
+    <div class="skills-row">
+        <span class="skill-tag">Python L3</span>
+        <span class="skill-tag">Testing L2</span>
+        <span class="skill-tag">Algoritma L3</span>
+    </div>
+</div>
+
+<!-- ── ACTION BAR ────────────────────────────────────────── -->
+<div id="action-bar">
+    <button class="primary-btn" onclick="openTaskModal()">
+        <span>🎯</span>
+        <span>Berikan Tugas</span>
+    </button>
+</div>
+
+<!-- ── WORK PROGRESS BANNER ──────────────────────────────── -->
+<div id="work-banner">
+    <div id="banner-title"><span class="banner-spinner"></span> Agent Memproses Tugas…</div>
+    <div id="banner-desc">Citra mengkoordinasi, Ari mengimplementasikan…</div>
+</div>
+
+<!-- ── TASK MODAL ─────────────────────────────────────────── -->
+<div id="task-modal">
+    <h2>🎯 Berikan Tugas ke Penduduk Kota</h2>
+    <p>Pilih preset atau tulis instruksi bebas. Agent akan mengerjakan secara nyata dan menghasilkan file Python.</p>
+
+    <div class="preset-grid">
+        <div class="preset-chip" onclick="setPresetGoal('Buatkan web dashboard portofolio interaktif AI City dengan HTTP server Python')">🌐 Web Dashboard</div>
+        <div class="preset-chip" onclick="setPresetGoal('Buatkan game Tic-Tac-Toe interaktif lengkap dengan bot AI minimax')">🎮 Game AI</div>
+        <div class="preset-chip" onclick="setPresetGoal('Buatkan aplikasi kalender interaktif dengan jadwal kegiatan harian')">📅 Kalender</div>
+        <div class="preset-chip" onclick="setPresetGoal('Bangun gedung kantor baru dan rekrut satu warga baru ke kota')">🏗️ Bangun Kota</div>
+        <div class="preset-chip" onclick="setPresetGoal('Buatkan kalkulator saintifik dengan evaluasi ekspresi matematika lengkap')">🧮 Kalkulator</div>
+        <div class="preset-chip" onclick="setPresetGoal('Buatkan REST API sederhana dengan FastAPI untuk manajemen data todo-list')">🔌 REST API</div>
+    </div>
+
+    <textarea id="task-input" placeholder="Deskripsikan tugas… contoh: Buatkan scraper berita terbaru Indonesia dengan Python"></textarea>
+
+    <div class="modal-footer">
+        <button class="ghost-btn" onclick="closeTaskModal()">Batal</button>
+        <button class="primary-btn" onclick="submitGoalFromGame()">
+            <span>🚀</span><span>Kirim ke Kota</span>
+        </button>
+    </div>
+</div>
+
+<!-- ── LLM CONFIG MODAL ───────────────────────────────────── -->
+<div id="llm-modal">
+    <h2>⚙️ Konfigurasi AI Engine</h2>
+    <p class="form-section">Hubungkan AI provider ke AI City. Ollama berjalan lokal tanpa internet. Groq gratis dan sangat cepat di cloud.</p>
+
+    <div id="llm-alert" class="llm-alert"></div>
+
+    <div class="form-group">
+        <label class="form-label">Provider AI</label>
+        <select id="llm-provider-select" class="form-select" onchange="onLlmProviderChange()">
+            <option value="ollama">🦙  Ollama Lokal (qwen3.5:9b — tanpa internet)</option>
+            <option value="groq">⚡  Groq Cloud (Llama-3.3-70b — gratis, cepat)</option>
+            <option value="mock">🧠  Smart Offline Engine (simulasi, tanpa LLM)</option>
+            <option value="openai">🤖  OpenAI (GPT-4o / GPT-4o-mini)</option>
+            <option value="deepseek">🐋  DeepSeek / OpenRouter</option>
+        </select>
+    </div>
+
+    <div class="form-group" id="group-api-key" style="display:none">
+        <label class="form-label">API Key</label>
+        <input type="password" id="llm-api-key" class="form-input" placeholder="gsk_... atau sk-...">
+    </div>
+
+    <div class="form-group" id="group-model">
+        <label class="form-label">Model Name</label>
+        <input type="text" id="llm-model-name" class="form-input" value="qwen3.5:9b">
+    </div>
+
+    <div class="form-group" id="group-base-url">
+        <label class="form-label">Base URL</label>
+        <input type="text" id="llm-base-url" class="form-input" value="http://127.0.0.1:11434">
+    </div>
+
+    <div class="modal-footer" style="margin-top:18px;">
+        <button class="ghost-btn" onclick="closeLlmModal()">Tutup</button>
+        <button class="primary-btn" id="btn-save-llm" onclick="saveAndTestLlm()">
+            <span>⚡</span><span>Test & Simpan</span>
+        </button>
+    </div>
+</div>
+
+<!-- ── RESULT MODAL ───────────────────────────────────────── -->
+<div id="result-modal">
+    <div class="result-header">
+        <div class="result-title"><span>✅</span> Tugas Selesai Dikerjakan</div>
+        <button class="result-close-btn" onclick="closeResultModal()">✕</button>
+    </div>
+
+    <div class="result-meta-grid">
+        <div class="meta-card" style="grid-column:1/-1;">
+            <div class="meta-card-label">Goal / Instruksi</div>
+            <div class="meta-card-value" id="res-goal">—</div>
+        </div>
+        <div class="meta-card">
+            <div class="meta-card-label">File Dihasilkan</div>
+            <div class="meta-card-value path" id="res-file">—</div>
+        </div>
+        <div class="meta-card">
+            <div class="meta-card-label">Status Peer Review</div>
+            <div class="meta-card-value good" id="res-review">—</div>
+        </div>
+    </div>
+
+    <div id="res-building-banner" class="building-banner">
+        🏗️ <strong>Ekspansi Kota:</strong> <span id="res-building-text">Bangunan baru & warga baru telah bergabung!</span>
+    </div>
+
+    <div class="result-section-title">
+        <span>💻</span> Output Terminal — Eksekusi Python Nyata
+    </div>
+    <div class="terminal-block" id="res-stdout">—</div>
+
+    <div id="res-stderr-section" style="display:none">
+        <div class="result-section-title"><span>⚠️</span> Stderr</div>
+        <div class="terminal-block error-view" id="res-stderr">—</div>
+    </div>
+
+    <div class="result-section-title">
+        <span>📄</span> Kode Python yang Dibuat
+        <span style="font-size:10px;color:#4a6080;margin-left:auto;">Disimpan di C:\AI_CITY\backend\workspace\</span>
+    </div>
+    <div class="terminal-block code-view" id="res-code">—</div>
+
+    <div style="display:flex;justify-content:flex-end;margin-top:18px;gap:10px;">
+        <button class="ghost-btn" onclick="copyResultCode()">📋 Salin Kode</button>
+        <button class="primary-btn" onclick="closeResultModal()">Lanjutkan Simulasi</button>
+    </div>
+</div>
+
+<script src="world.js"></script>
+</body>
+</html>

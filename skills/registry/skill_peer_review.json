@@ -1,0 +1,27 @@
+{
+  "id": "skill_peer_review",
+  "name": "Evidence-Based Peer Review",
+  "category": "collaboration",
+  "level": 4,
+  "description": "Meninjau hasil kerja rekan agent dengan acceptance criteria, pembuktian evidence, dan saran konstruktif.",
+  "prerequisites": [
+    "skill_python_basics",
+    "skill_testing_pytest"
+  ],
+  "procedures": [
+    "Membaca artefak dan acceptance criteria",
+    "Mendeteksi missing edge case dan validasi",
+    "Menyusun review findings terstruktur",
+    "Memverifikasi revisi penulis"
+  ],
+  "tests": [
+    "Review memuat severity, missing gap, dan rekomendasi",
+    "Skor evaluasi objektif berbasis evidence"
+  ],
+  "sources": [
+    "AI City Engineering Standards"
+  ],
+  "validated": true,
+  "confidence": 0.96,
+  "version": 1
+}
